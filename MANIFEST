@@ -8,7 +8,6 @@ t/00-load.t
 t/01-standard_call.t
 t/02-protected_rm.t
 t/03-protected-module.t
-t/03-protected-module.t.bak
 t/pod-coverage.t
 t/pod.t
 t/lib/MyTestApp2.pm
