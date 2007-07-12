@@ -4,7 +4,7 @@ use strict;
 use Carp;
 use base 'Exporter';
 use Attribute::Handlers;
-our @EXPORT  = qw/config_requiressl mode_redirect/;
+our @EXPORT = qw/config_requiressl mode_redirect/;
 our %SSL_RUN_MODES;
 use Data::Dumper;
 
@@ -14,11 +14,11 @@ CGI::Application::Plugin::RequireSSL - Force SSL in specified pages or modules
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 SYNOPSIS
 
@@ -132,7 +132,7 @@ application is deployed in an environment that doesn't support SSL.
 
 sub config_requiressl {
     my ($self, %args) = @_;
-    
+
     foreach my $param (qw/ keep_in_ssl ignore_check/) {
         $self->{__PACKAGE__ . $param} = $args{$param} if $args{$param};
     }
@@ -147,7 +147,7 @@ directly.
 =cut
 
 sub mode_redirect {
-    my $self = shift;
+    my $self     = shift;
     my $new_mode = $self->{__PACKAGE__ . 'new_mode'};
     croak "Cannot redirect from POST" if $self->query->request_method eq 'POST';
     my $new_url = $self->query->url(-base => 1);
@@ -161,7 +161,7 @@ sub mode_redirect {
     }
     $self->header_type('redirect');
     $self->header_add(-uri => $new_url);
-    
+
     return ' ';
 }
 
@@ -173,9 +173,9 @@ sub _add_runmodes {
 sub _check_ssl {
     my $self = shift;
     my $rm   = $self->get_current_runmode;
- 
+
     unless ($self->{__PACKAGE__ . 'ignore_check'}) {
-        
+
         # Process protection is either the module or the requested run mode
         # is protected
         if (($self->param('require_ssl') || $SSL_RUN_MODES{$rm})
@@ -188,10 +188,18 @@ sub _check_ssl {
                 croak "https request required";
             }
         }
-        
+
         # If a request is made using SSL, but we don't need it to be, then
         # redirect to the non-SSL page
-        if ($self->query->https && ! ($self->{__PACKAGE__ . 'keep_in_ssl'} || $self->param('require_ssl') || $SSL_RUN_MODES{$rm})) {
+        if (
+            $self->query->https
+            && !(
+                   $self->{__PACKAGE__ . 'keep_in_ssl'}
+                || $self->param('require_ssl')
+                || $SSL_RUN_MODES{$rm}
+            )
+            )
+        {
             $self->{__PACKAGE__ . 'new_mode'} = 'http';
             return $self->prerun_mode('mode_redirect');
         }
@@ -265,4 +273,4 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of CGI::Application::Plugin::RequireSSL
+1;    # End of CGI::Application::Plugin::RequireSSL

@@ -27,5 +27,5 @@ my $q = new CGI;
 	
 	my $app = new MyTestApp(QUERY=>$q, PARAMS => {rewrite_to_ssl => 1});
 	my $t = $app->run;
-	ok ($t =~ /Status: 302 Found/, $testname);
+	ok ($t =~ /Status:\s+302\s/, $testname);
 }

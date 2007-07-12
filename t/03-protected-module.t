@@ -31,7 +31,7 @@ my $q = new CGI;
         PARAMS => {require_ssl => 1, rewrite_to_ssl => 1}
     );
     my $t = $app->run;
-    ok($t =~ /Status: 302 Found/, $testname);
+    ok($t =~ /Status:\s+302\s/, $testname);
 }
 
 {
